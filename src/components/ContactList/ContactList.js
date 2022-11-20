@@ -1,26 +1,34 @@
 import { useSelector } from "react-redux";
-import { getContacts, getFilter } from "redux/contactsSlice";
+import { useGetContactsQuery } from "redux/contactsApi";
+import { getFilter } from "redux/filterSlice";
 import { ContactListEl } from 'components/ContactListEl/ContactListEl';
 import { Contacts } from './ContactList.styled';
 
-
 export const ContactList = () => {
-    const contacts = useSelector(getContacts);
+    const {data, isFetching, error} = useGetContactsQuery();
     const filter = useSelector(getFilter);
 
     const getFilteredContacts = () => {
         const normalizedFilter = filter.toLowerCase();
-        return contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter));
+        return data?.filter(contact => contact.name.toLowerCase().includes(normalizedFilter));
     };
     
     const filteredContacts = getFilteredContacts();
+    const isAnyContacts = filteredContacts?.length > 0;
+    const isNoMatches = filteredContacts?.length === 0;
     
     return (
-            <Contacts>
-                {filteredContacts.map((contact) => {
-                    const { name, number, id } = contact;
-                    return <ContactListEl name={name} number={number} id={id} key={id} />;
-                })}
-            </Contacts>
+    <>
+    {isFetching && (<p>Loading, please wait...</p>)}
+    {error && (<p>Sorry, there is an error. Please reload the page.</p>)}
+    {isAnyContacts &&
+        <Contacts>
+            { filteredContacts.map( contact => { 
+            const { id, name, phone } = contact;
+            return <ContactListEl  name={name} number={phone} key={id} id={id}/>;})
+            }
+        </Contacts>}
+    {isNoMatches && <p>You dont have any contacts or matches!</p>}
+    </>
     );
 };

@@ -1,58 +1,51 @@
-import { useDispatch, useSelector } from "react-redux";
-import { addContact, getContacts } from 'redux/contactsSlice';
+import { useAddContactMutation, useGetContactsQuery } from "redux/contactsApi";
 import { nanoid } from 'nanoid';
-import { Form, FormLabel, FormInput, FormBtn  } from './ContactForm.styled';
+import { Form, FormLabel, FormInput, FormBtn } from './ContactForm.styled';
+import Notiflix from 'notiflix';
 
-export function ContactForm() {
-    const dispatch = useDispatch();
-    const contacts = useSelector(getContacts);
-
+export const ContactForm= () => {
+    const [addContact, {isLoading}] = useAddContactMutation();
+    const { data: contacts } = useGetContactsQuery();
+    const initialValues = {
+        name: '',
+        number: '',
+    };
     const nameId = nanoid();
     const numberId = nanoid();
 
-    const handleSubmit = evt => {
+    const handleSubmit = async evt => {
         evt.preventDefault();
-        
         const form = evt.currentTarget;
         const name = form.elements.name.value;
         const number = form.elements.number.value;
         const normalizedName = name.toLowerCase();
         const checkDoubling = contacts.map(contact => contact.name.toLowerCase()).includes(normalizedName);
         if (checkDoubling) {
-            alert(`${name} is already in your contacts`);
-            return;
-        }
-
+            return Notiflix.Notify.warning(`${name} is already in your contacts!`);
+        };
+        
         const newId = nanoid();
         const newContact = {
-            id: newId,
-            name,
-            number,
+        id: newId,
+        name,
+        phone: number,
         };
-        dispatch(addContact(newContact));
+
         form.reset();
+
+        try {
+            const response = await addContact(newContact);
+            if (response) {
+                return Notiflix.Notify.success(`${name} added to your contacts!`);
+            };
+        }
+        catch (error) {
+            console.log('ERROR');
+        }
     };
 
-    // const handleChange = evt => { 
-    //     const { name, value } = evt.currentTarget;
-
-    //     switch (name) {
-    //         case 'name':
-    //             setName(value);
-    //             break;
-            
-    //         case 'number':
-    //             setNumber(value);
-    //             break;
-            
-    //         default:
-    //             return;
-    //     };
-    // };
-
-
     return (
-        <Form onSubmit={handleSubmit}>
+        <Form initialValues={initialValues} onSubmit={handleSubmit}>
             <FormLabel htmlFor={nameId}> Name </FormLabel>
             <FormInput
                 type="text"
@@ -71,7 +64,7 @@ export function ContactForm() {
                 title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
                 required
              />
-            <FormBtn type='submit'>Add contact</FormBtn>
+            <FormBtn type='submit' disabled={isLoading}>Add contact</FormBtn>
         </Form>
     );
 };
