@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-
 export const ContactElement = styled.li`
     display: flex;
     align-items: center;
@@ -13,7 +12,6 @@ export const ContactElement = styled.li`
 `;
 
 export const ContactText = styled.p`
-
 `;
 
 export const ContactBtn = styled.button`

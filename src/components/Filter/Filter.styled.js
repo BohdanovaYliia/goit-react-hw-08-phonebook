@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-
 export const FilterLabel = styled.label`
     margin-left: 20px;
     font-weight: 700;

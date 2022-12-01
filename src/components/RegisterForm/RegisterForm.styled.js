@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 import { Form, Field, ErrorMessage } from 'formik';
 
-export const FormContact = styled(Form)`
+export const FormRegister = styled(Form)`
     display: flex;
     align-items: center;
     flex-direction: column;
     gap: 15px;
     width:380px;
+    margin-top: 20px;
     margin-left: auto;
     margin-right: auto;
     padding: 10px;
@@ -47,6 +48,14 @@ export const FormBtn = styled.button`
         box-shadow: 3px 3px 2px 2px rgba(0, 0, 0, 0.3);
     }
     transition: background-color 300ms linear, box-shadow 300ms linear;
+`;
+
+export const ErrorText = styled.div`
+  text-align: center;
+  color: red;
+  margin-top: 15px;
+  font-weight: 700;
+  font-size: 16px;
 `;
 
 export const InputError = styled(ErrorMessage)`
